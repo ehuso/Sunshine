@@ -32,7 +32,7 @@ public class WeatherContract {
     // content authority is the package name for the app, which is guaranteed to be unique on the
     // device.
 
-    //todo FIX TEST PROVIDER BELOW
+
     public static final String CONTENT_AUTHORITY = "com.example.erik.sunshine.app";
 
     // Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
