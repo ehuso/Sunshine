@@ -264,7 +264,7 @@ public class WeatherProvider extends ContentProvider {
         // handle.  If it doesn't match these, throw an UnsupportedOperationException.
         final int match = sUriMatcher.match(uri);
         int returnInt;
-
+        if (null == selection) selection = "1";
         switch (match) {
             case WEATHER: {
                 returnInt = db.delete(WeatherContract.WeatherEntry.TABLE_NAME, selection, selectionArgs);
@@ -301,12 +301,41 @@ public class WeatherProvider extends ContentProvider {
     }
 
     @Override
-    //TODO Finish using Insert() and delete() as a template, uncomment and test using test provider. Currently on Quiz: Update and Delete - Quiz
+
     public int update(
             Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         // Student: This is a lot like the delete function.  We return the number of rows impacted
         // by the update.
-        return 0;
+        // Student: Start by getting a writable database
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        // Student: Use the uriMatcher to match the WEATHER and LOCATION URI's we are going to
+        // handle.  If it doesn't match these, throw an UnsupportedOperationException.
+        final int match = sUriMatcher.match(uri);
+        int returnInt;
+
+        switch (match) {
+            case WEATHER: {
+                returnInt = db.update(WeatherContract.WeatherEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+
+            }
+            case LOCATION: {
+                returnInt = db.update(WeatherContract.LocationEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+            }
+        }
+
+        if (returnInt != 0)
+        {
+                getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+
+        // Student: return the actual rows updated
+        return returnInt;
     }
 
     @Override
