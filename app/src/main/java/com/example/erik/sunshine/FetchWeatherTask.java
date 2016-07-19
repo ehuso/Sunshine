@@ -15,6 +15,8 @@
  */
 package com.example.erik.sunshine;
 
+import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -112,6 +114,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
      * @return the row ID of the added location.
      */
     long addLocation(String locationSetting, String cityName, double lat, double lon) {
+
+        long locationId;
+
         // Students: First, check if the location with this city name exists in the db
         Cursor locationCursor = mContext.getContentResolver().query(
                 WeatherContract.LocationEntry.CONTENT_URI,
@@ -123,11 +128,34 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         //TODO If it exists, return the current ID
         // Otherwise, insert it using the content resolver and the base URI
+        if (locationCursor.moveToFirst())
+        {
+            int locationIdIndex = locationCursor.getColumnIndex(WeatherContract.LocationEntry._ID);
+            locationId = locationCursor.getLong(locationIdIndex);
+        }
+        else
+        {
+            //insert rows using content provider
+            ContentValues locationValues = new ContentValues();
 
+            //add data along with corresponding data type so the content provider knows what is being inserted
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
 
+            //insert location data into the database
+            Uri insertedUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI,locationValues);
 
+            //the resulting URI containts the ID for the row, extract the location ID from the URI
+            locationId = ContentUris.parseId(insertedUri);
+        }
 
-        return -1;
+        //close the cursor
+        locationCursor.close();;
+
+        return locationId;
+
     }
 
     /*
