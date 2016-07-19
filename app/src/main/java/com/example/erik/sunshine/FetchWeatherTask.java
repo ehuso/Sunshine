@@ -126,7 +126,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 null);
 
 
-        //TODO If it exists, return the current ID
+
         // Otherwise, insert it using the content resolver and the base URI
         if (locationCursor.moveToFirst())
         {
@@ -312,6 +312,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             // add to database
             if ( cVVector.size() > 0 ) {
                 // Student: call bulkInsert to add the weatherEntries to the database here
+                //todo add bulk insert
+                ContentValues[] cvArray = new ContentValues[cVVector.size()];
+                cVVector.toArray(cvArray);
+                mContext.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, cvArray);
 
             }
 
@@ -353,7 +357,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         if (params.length == 0) {
             return null;
         }
-        String locationQuery = params[0];
+
+        //takes zip code and adds "USA" to query correct data from opeanweathermap
+        String locationQuery = params[0]+"USA";
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -380,7 +386,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             final String APPID_PARAM = "APPID";
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, params[0])
+                    .appendQueryParameter(QUERY_PARAM, locationQuery)
                     .appendQueryParameter(FORMAT_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
