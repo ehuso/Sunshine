@@ -271,7 +271,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             return null;
         }
 
-        //takes zip code and adds "USA" to query correct data from opeanweathermap
+        //takes zip code and adds "USA" to query correct data from opeanweathermap website
 
         String locationQuery = params[0]+"USA";
 
